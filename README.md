@@ -14,7 +14,7 @@ Process one sentence and simple textfile in chinese by Ner service
 
 optional arguments:
   -h, --help           show this help message and exit
-  --endpoint ENDPOINT  Endpoint of Ner service, if not specified, environment **NER_ENDPOINT** is used.
+  --endpoint ENDPOINT  Endpoint of Ner service, if not specified, environment 'NER_ENDPOINT' is used.
   --sentence SENTENCE  Sentence to process
   --path PATH          Path file to process
 ```  
