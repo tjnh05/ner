@@ -9,8 +9,10 @@ For instance:
 ```bash
 $ python ner.py
 [Endpoint] http://example.com/ner/bert/normal
+
 sentence example:
 {'ORG': ['康龙化成', '安永华明']}
+
 simple text file example:
 {'LOC': ['新冠', '新疆'],
  'ORG': ['华资实业',
