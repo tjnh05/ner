@@ -7,6 +7,7 @@ This program is SDK of Ner service API.
 It can handle one sentence and simple text file in chinese. 
 
 ## Usage
+```text
 usage: ner.py [-h] [--endpoint ENDPOINT] [--sentence SENTENCE] [--path PATH]
 
 Process one sentence and simple textfile in chinese by Ner service
@@ -16,7 +17,7 @@ optional arguments:
   --endpoint ENDPOINT  Endpoint of Ner service
   --sentence SENTENCE  Sentence to process
   --path PATH          Path file to process
-  
+```  
   
 For instance:  
 ```bash
