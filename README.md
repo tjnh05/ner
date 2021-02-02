@@ -6,6 +6,7 @@ This program is SDK of Ner service API.
 
 It can handle one sentence and simple text file in chinese. 
 
+## Usage
 usage: ner.py [-h] [--endpoint ENDPOINT] [--sentence SENTENCE] [--path PATH]
 
 Process one sentence and simple textfile in chinese by Ner service
