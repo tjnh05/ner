@@ -10,7 +10,7 @@ It can handle one sentence and simple text file in chinese
 
 usage: ner.py [-h] [--endpoint ENDPOINT] [--sentence SENTENCE] [--path PATH]
 
-Process one sentence and simple textfile in chinese by Ner service
+Process one sentence or simple textfile in chinese by Ner service
 
 optional arguments:
   -h, --help           show this help message and exit
