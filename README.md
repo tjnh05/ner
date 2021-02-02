@@ -2,9 +2,11 @@
 
 SDK to access API of Ner service
 
-This program is SDK of Ner service API.
-It can handle one sentence and simple text file in chinese
-For instance:
+This program is SDK of Ner service API.  
+
+It can handle one sentence and simple text file in chinese  
+For instance:  
+```bash
 $ python ner.py
 [Endpoint] http://example.com/ner/bert/normal
 sentence example:
@@ -23,3 +25,4 @@ simple text file example:
          '丰华股份',
          '丰华股份',
          '壳公司']}
+```
