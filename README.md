@@ -4,7 +4,7 @@ SDK to access API of Ner service
 
 This program is SDK of Ner service API.  
 
-It can handle one sentence and simple text file in chinese  
+It can handle one sentence and simple text file in chinese.  
 For instance:  
 ```bash
 $ python ner.py
