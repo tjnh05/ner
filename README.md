@@ -4,16 +4,23 @@ SDK to access API of Ner service
 
 This program is SDK of Ner service API.  
 
-It can handle one sentence and simple text file in chinese.  
+It can handle one sentence and simple text file in chinese. 
+
+usage: ner.py [-h] [--endpoint ENDPOINT] [--sentence SENTENCE] [--path PATH]
+
+Process one sentence and simple textfile in chinese by Ner service
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --endpoint ENDPOINT  Endpoint of Ner service
+  --sentence SENTENCE  Sentence to process
+  --path PATH          Path file to process
+  
+  
 For instance:  
 ```bash
-$ python ner.py -e http://example.com/ner/bert/normal
-[Endpoint] http://example.com/ner/bert/normal
-
-sentence example:
+$ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --sentence '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事 务所'
 {'ORG': ['康龙化成', '安永华明']}
-
-simple text file example:
 {'LOC': ['新冠', '新疆'],
  'ORG': ['华资实业',
          '明科',
