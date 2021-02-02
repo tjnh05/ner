@@ -10,13 +10,8 @@ It can handle one sentence and simple text file in chinese
 
 For instance:
 
-$ python ner.py
-[Endpoint] http://example.com:30500/ner/bert/normal
-
-sentence example:
+$ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --sentence '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事 务所'
 {'ORG': ['康龙化成', '安永华明']}
-
-simple text file example:
 {'LOC': ['新冠', '新疆'],
  'ORG': ['华资实业',
          '明科',
@@ -31,6 +26,11 @@ simple text file example:
          '丰华股份',
          '壳公司']}
 """
+__author__ = "Wang Bodhi Faqun<jyxz5@hotmail.com>"
+__copyright__ = "Copyright 2021 Wang Bodhi Wang"
+__license__ = "MIT"
+__version__ = "0.1"
+
 import requests
 from jsonmerge import merge
 
@@ -52,6 +52,9 @@ class ner:
     def __init__(self, endpoint:str):
         self.endpoint = endpoint
 
+    def getEndpoint(self):
+        return self.endpoint
+
     def ner_sentence(self, sentence:str):
         return requests.post(self.endpoint,
                              json={'sentence':sentence}).json()
@@ -70,20 +73,27 @@ class ner:
 
         return result
 
+
 if __name__ == "__main__":
     from pprint import pprint
     import pybase64, argparse, os, sys
 
-    default_ner_endpoint= pybase64.b64decode(b'aHR0cDovL2RhaS5kZWxvaXR0ZS5jb206MzA1MDAvbmVyL2JlcnQvbm9ybWFs').decode("utf-8")
+    default_ner_endpoint= pybase64.b64decode(
+        b'aHR0cDovL2RhaS5kZWxvaXR0ZS5jb206MzA1MDAvbmVyL2JlcnQvbm9ybWFs').decode("utf-8")
 
 
     """Entry point of the program when called as a script.
     """
     # Parse command line options
     parser = argparse.ArgumentParser (description=
-                                      'Process one sentence and simple text file in chinese by Ner service')
-    parser.add_argument ('-e', dest='endpoint',
+                    """Process one sentence and simple text"""
+                    """file in chinese by Ner service""")
+    parser.add_argument ('--endpoint', dest='endpoint',
                          help='Endpoint of Ner service')
+    parser.add_argument ('--sentence', dest='sentence',
+                         help='Sentence to process')
+    parser.add_argument ('--path', dest='path',
+                         help='Path file to process')
     args = parser.parse_args ()
     endpoint = args.endpoint
     if endpoint is None:
@@ -93,19 +103,30 @@ if __name__ == "__main__":
             print("[getenv]{}".format(e))
             sys.exit(1)
 
-    print("[Endpoint] {}\n".format(endpoint))
+    sentence = args.sentence
+    path = args.path
+
+    if sentence is None and path is None:
+        print("Please input sentence or file name to process!")
+        parser.print_help()
+        sys.exit(1)
+
     bert_normal = ner (endpoint)
-    path = "test.txt"
 
-    try:
-        sentence = '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事务所'
-        result = bert_normal.ner_sentence(sentence)
-        pprint(result, width=40)
-    except Exception as e:
-        print("[sentence]Failed!{}".format(e))
+    if sentence is not None:
+        try:
+            result = bert_normal.ner_sentence(sentence)
+            pprint(result, width=40)
+        except Exception as e:
+            print("[sentence]Failed!{}".format(e))
+            sys.exit(1)
 
-    try:
-        result = bert_normal.ner_file(path)
-        pprint(result)
-    except Exception as e:
-        print("[file]Failed!{}".format(e))
+    if path is not None:
+        try:
+            result = bert_normal.ner_file(path)
+            pprint(result)
+        except Exception as e:
+            print("[file]Failed!{}".format(e))
+            sys.exit(1)
+
+    sys.exit(0)
