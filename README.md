@@ -7,7 +7,7 @@ This program is SDK of Ner service API.
 It can handle one sentence and simple text file in chinese.  
 For instance:  
 ```bash
-$ python ner.py
+$ python ner.py -e http://example.com/ner/bert/normal
 [Endpoint] http://example.com/ner/bert/normal
 
 sentence example:
