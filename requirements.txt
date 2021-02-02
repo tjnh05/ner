@@ -1,0 +1,6 @@
+requests
+jsonmerge
+json5==0.9.5
+pprint
+pybase64
+argparse
