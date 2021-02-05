@@ -1,7 +1,7 @@
 requests
 jsonmerge
 json5==0.9.5
-pprint
+pprintpp
 pybase64
 argparse
 lxml
