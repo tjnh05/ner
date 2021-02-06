@@ -27,7 +27,7 @@ $ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --
          '壳公司']}
 """
 __author__ = "Wang Bodhi Faqun<jyxz5@hotmail.com>"
-__copyright__ = "Copyright 2021 Wang Bodhi Wang"
+__copyright__ = "Copyright 2021 Wang Bodhi Faqun"
 __license__ = "MIT"
 __version__ = "0.1"
 
