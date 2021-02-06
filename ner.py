@@ -6,7 +6,7 @@
 
 This program is SDK of Ner service API.
 
-It can handle one sentence and simple text file in chinese
+It can handle one sentence or simple text file by self-NER or stanford NER service
 
 For instance:
 
@@ -36,17 +36,23 @@ from jsonmerge import merge
 from lxml import html
 from bs4 import BeautifulSoup
 class basener:
+    max_lines = 50
+
     def __init__(self):
+        self.endpoint = ""
         pass
 
     def getEndpoint(self):
-        pass
+        return self.endpoint
 
     def ner_sentence(self, sentence:str):
         pass
 
-    def ner_file(self, path:str):
-        pass
+    def ner_file(self, path:str, encoding="utf-8"):
+        with open(path, "r", encoding=encoding) as f:
+            lines = f.read()
+
+        return self.ner_sentence(lines)
 
 class ner(basener):
     schema = {
@@ -66,12 +72,13 @@ class ner(basener):
     def __init__(self, endpoint:str):
         self.endpoint = endpoint
 
-    def getEndpoint(self):
-        return self.endpoint
-
     def ner_sentence(self, sentence:str):
-        return requests.post(self.endpoint,
-                             json={'sentence':sentence}).json()
+        r = requests.post(self.endpoint,
+                          json={'sentence':sentence})
+        if not r.ok:
+            raise Exception('[ner_sentence]failed!{}'.format(e))
+
+        return r.json()
 
     def ner_file(self, path:str, encoding="utf-8"):
         with open(path, "r", encoding=encoding) as f:
@@ -123,6 +130,9 @@ class stanford_ner(basener):
         result = dict()
 
         r = requests.post(self.endpoint, data=params)
+        if not r.ok:
+            raise Exception('[ner_sentence]failed!{}'.format(e))
+
         tree = html.fromstring(r.content)
         ner_result = tree.xpath(stanford_ner.xpath)[1]
         bsObj = BeautifulSoup(ner_result.strip(),"lxml")
@@ -134,14 +144,19 @@ class stanford_ner(basener):
     def ner_file(self, path:str, encoding="utf-8"):
         with open(path, "r", encoding=encoding) as f:
             lines = f.readlines()
+
         lines = [ line.strip() for line in lines if line.strip()!='']
 
         result = dict()
-        result0 = {'LOC': [], 'PER': [], 'ORG': []}
-        for line in lines:
-            r=self.ner_sentence(line)
+        start = 0
+        end = len(lines)
+        while start < end:
+            block = str(lines[start:start + super().max_lines])
+            result0 = {'LOC': [], 'PER': [], 'ORG': []}
+            r=self.ner_sentence(block)
             if r != result0:
                 result = merge(result, r, ner.schema)
+            start = start + super().max_lines
 
         return result
 
@@ -152,6 +167,7 @@ if __name__ == "__main__":
     default_ner_endpoint= pybase64.b64decode(
         b'aHR0cDovL2RhaS5kZWxvaXR0ZS5jb206MzA1MDAvbmVyL2JlcnQvbm9ybWFs').decode("utf-8")
 
+    nertypes = ("self","stanford")
 
     """Entry point of the program when called as a script.
     """
@@ -160,7 +176,7 @@ if __name__ == "__main__":
                     """Process one sentence and simple text"""
                     """file by remote self-NER service or Stanford NER one.""")
     parser.add_argument ('--nertype', dest='nertype',
-                         help='NER service type,0:self-NER(defualt),1:Stanford-NER')
+                         help='NER service type,self:self-NER(defualt),stanford:tanford-NER')
     parser.add_argument ('--classifier', dest='classifier',
                          help="""classifier code of Stanford NER service,including """
                               """7class, 4class, 3class, distsim"""
@@ -172,11 +188,11 @@ if __name__ == "__main__":
     parser.add_argument ('--path', dest='path',
                          help='Path file to process')
     args = parser.parse_args ()
-    nertype = args.nertype
-    if nertype is None or nertype.lower() in ['','0','false','self']:
+    nertype = args.nertype.lower()
+    if nertype is None or nertype in ['','self','default']:
         nertype = 'self'
-    else:
-        nertype = 'stanford'
+    elif nertype not in nertypes:
+        raise ValueError("Unsported NER type[{}] inputed!".format(nertype))
 
     if nertype == 'self':
         endpoint = args.endpoint
@@ -186,7 +202,7 @@ if __name__ == "__main__":
             except Exception as e:
                 print("[getenv]{}".format(e))
                 sys.exit(1)
-    else:
+    elif nertype == 'stanford':
         classifier = args.classifier
 
     sentence = args.sentence
