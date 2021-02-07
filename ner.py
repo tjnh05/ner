@@ -60,6 +60,8 @@ import requests
 from jsonmerge import merge
 from lxml import html
 from bs4 import BeautifulSoup
+
+
 class basener:
     schema = {
              "properties": {
