@@ -1,30 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Wang, Bodhi Faqun <jyxz5@hotmail.com>
-#
-"""ner
-
-This program is SDK of Ner service API.
-
-It can handle one sentence or simple text file by self-NER or stanford NER service
-
-For instance:
-
-$ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --sentence '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事 务所'
-{'ORG': ['康龙化成', '安永华明']}
-{'LOC': ['新冠', '新疆'],
- 'ORG': ['华资实业',
-         '明科',
-         '中葡',
-         '亚星',
-         '厦华',
-         '中房股份',
-         '中房股份',
-         '西域旅游',
-         '西域旅游',
-         '丰华股份',
-         '丰华股份',
-         '壳公司']}
 """
 __author__ = "Wang Bodhi Faqun<jyxz5@hotmail.com>"
 __copyright__ = "Copyright 2021 Wang Bodhi Faqun"
@@ -36,7 +9,19 @@ from jsonmerge import merge
 from lxml import html
 from bs4 import BeautifulSoup
 class basener:
-    max_lines = 50
+    schema = {
+             "properties": {
+                 "LOC": {
+                     "mergeStrategy": "append"
+                 },
+                 "ORG": {
+                     "mergeStrategy": "append"
+                 },
+                 "PER": {
+                     "mergeStrategy": "append"
+                 }
+            }
+        }
 
     def __init__(self):
         self.endpoint = ""
@@ -54,21 +39,8 @@ class basener:
 
         return self.ner_sentence(lines)
 
-class ner(basener):
-    schema = {
-             "properties": {
-                 "LOC": {
-                     "mergeStrategy": "append"
-                 },
-                 "ORG": {
-                     "mergeStrategy": "append"
-                 },
-                 "PER": {
-                     "mergeStrategy": "append"
-                 }
-            }
-        }
 
+class ner(basener):
     def __init__(self, endpoint:str):
         self.endpoint = endpoint
 
@@ -89,9 +61,28 @@ class ner(basener):
         for line in lines:
             r=self.ner_sentence(line)
             if r != dict():
-                result = merge(result, r, ner.schema)
+                result = merge(result, r, self.schema)
 
         return result
+
+    def ner_file_block(self, path:str, maxlines=1, encoding="utf-8"):
+        with open(path, "r", encoding=encoding) as f:
+            lines = f.readlines()
+
+        lines = [ line.strip() for line in lines if line.strip()!='']
+
+        result = dict()
+        start = 0
+        end = len(lines)
+        while start < end:
+            block = str(lines[start:start + maxlines])
+            r=self.ner_sentence(block)
+            if r != dict():
+                result = merge(result, r, self.schema)
+            start = start + maxlines
+
+        return result
+
 
 class stanford_ner(basener):
 
@@ -113,7 +104,6 @@ class stanford_ner(basener):
         if classifier not in stanford_ner.classifiers.keys():
             raise ValueError('Unsported classifier {}'.format(classifier))
         self.classifier = stanford_ner.classifiers[classifier]
-
         self.outputFormat = "xml"
         self.preserveSpacing = "true"
 
@@ -141,7 +131,7 @@ class stanford_ner(basener):
 
         return result
 
-    def ner_file(self, path:str, encoding="utf-8"):
+    def ner_file(self, path:str, encoding="utf-8", maxlines=50):
         with open(path, "r", encoding=encoding) as f:
             lines = f.readlines()
 
@@ -151,12 +141,12 @@ class stanford_ner(basener):
         start = 0
         end = len(lines)
         while start < end:
-            block = str(lines[start:start + super().max_lines])
+            block = str(lines[start:start + maxlines])
             result0 = {'LOC': [], 'PER': [], 'ORG': []}
             r=self.ner_sentence(block)
             if r != result0:
-                result = merge(result, r, ner.schema)
-            start = start + super().max_lines
+                result = merge(result, r, self.schema)
+            start = start + maxlines
 
         return result
 
