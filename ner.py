@@ -27,7 +27,7 @@ optional arguments:
                         type
   --sentence SENTENCE   Sentence to process
   --path PATH           Path file to process
-  
+
 $ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --sentence '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事 务所'
 {'ORG': ['康龙化成', '安永华明']}
 {'LOC': ['新冠', '新疆'],
@@ -43,6 +43,11 @@ $ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --
          '丰华股份',
          '丰华股份',
          '壳公司']}
+
+$ python ner.py --nertype stanford --sentence 'hello, chongqing, intel, IBM, Tecent. Bill Gates said.' --classifier 7class
+{'LOC': ['chongqing'],
+ 'ORG': ['intel', 'IBM', 'Tecent'],
+ 'PER': ['Gates']}
 
 $ python ner.py --nertype stanford --classifier 7class  --path pg14469.txt
 """
@@ -99,7 +104,7 @@ class ner(basener):
 
         return r.json()
 
-    def ner_file(self, path:str, encoding="utf-8"):
+    def ner_file(self, path:str, encoding:str="utf-8"):
         with open(path, "r", encoding=encoding) as f:
             lines = f.readlines()
         lines = [ line.strip() for line in lines if line.strip()!='']
@@ -109,24 +114,6 @@ class ner(basener):
             r=self.ner_sentence(line)
             if r != dict():
                 result = merge(result, r, self.schema)
-
-        return result
-
-    def ner_file_block(self, path:str, maxlines=1, encoding="utf-8"):
-        with open(path, "r", encoding=encoding) as f:
-            lines = f.readlines()
-
-        lines = [ line.strip() for line in lines if line.strip()!='']
-
-        result = dict()
-        start = 0
-        end = len(lines)
-        while start < end:
-            block = str(lines[start:start + maxlines])
-            r=self.ner_sentence(block)
-            if r != dict():
-                result = merge(result, r, self.schema)
-            start = start + maxlines
 
         return result
 
@@ -178,7 +165,7 @@ class stanford_ner(basener):
 
         return result
 
-    def ner_file(self, path:str, encoding="utf-8", maxlines=50):
+    def ner_file(self, path:str, encoding:str="utf-8", maxlines:int=50):
         with open(path, "r", encoding=encoding) as f:
             lines = f.readlines()
 
@@ -225,7 +212,7 @@ if __name__ == "__main__":
     parser.add_argument ('--path', dest='path',
                          help='Path file to process')
     args = parser.parse_args ()
-    nertype = args.nertype.lower()
+    nertype = args.nertype.lower() if args.nertype is not None else None
     if nertype is None or nertype in ['','self','default']:
         nertype = 'self'
     elif nertype not in nertypes:
