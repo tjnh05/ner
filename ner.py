@@ -1,3 +1,50 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Wang, Bodhi Faqun <jyxz5@hotmail.com>
+#
+"""ner
+
+This program is SDK of Ner service API.
+
+It can handle one sentence or simple text file by self-NER or stanford NER service
+
+For instance:
+$ python ner.py --help
+usage: ner.py [-h] [--nertype NERTYPE] [--classifier CLASSIFIER]
+              [--endpoint ENDPOINT] [--sentence SENTENCE] [--path PATH]
+
+Process one sentence and simple textfile by remote self-NER service or
+Stanford NER one.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --nertype NERTYPE     NER service type,self:self-
+                        NER(defualt),stanford:tanford-NER
+  --classifier CLASSIFIER
+                        classifier code of Stanford NER service,including
+                        7class, 4class, 3class, distsim
+  --endpoint ENDPOINT   Endpoint of self-NER service,ignored when Stanford-NER
+                        type
+  --sentence SENTENCE   Sentence to process
+  --path PATH           Path file to process
+  
+$ python ner.py --endpoint http://example.com/ner/bert/normal --path test.txt --sentence '康龙化成(03759)拟续聘安永华明为2020年度境内会计师事 务所'
+{'ORG': ['康龙化成', '安永华明']}
+{'LOC': ['新冠', '新疆'],
+ 'ORG': ['华资实业',
+         '明科',
+         '中葡',
+         '亚星',
+         '厦华',
+         '中房股份',
+         '中房股份',
+         '西域旅游',
+         '西域旅游',
+         '丰华股份',
+         '丰华股份',
+         '壳公司']}
+
+$ python ner.py --nertype stanford --classifier 7class  --path pg14469.txt
 """
 __author__ = "Wang Bodhi Faqun<jyxz5@hotmail.com>"
 __copyright__ = "Copyright 2021 Wang Bodhi Faqun"
