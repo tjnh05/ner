@@ -102,7 +102,7 @@ class ner(basener):
         r = requests.post(self.endpoint,
                           json={'sentence':sentence})
         if not r.ok:
-            raise Exception('[ner_sentence]failed!{}'.format(e))
+            raise Exception('[ner_sentence]\n{}'.format(r.text))
 
         return r.json()
 
@@ -157,7 +157,7 @@ class stanford_ner(basener):
 
         r = requests.post(self.endpoint, data=params)
         if not r.ok:
-            raise Exception('[ner_sentence]failed!{}'.format(e))
+            raise Exception('[ner_sentence]\n{}'.format(r.text))
 
         tree = html.fromstring(r.content)
         ner_result = tree.xpath(stanford_ner.xpath)[1]
@@ -247,7 +247,7 @@ if __name__ == "__main__":
             result = obj.ner_sentence(sentence)
             pprint(result, width=40)
         except Exception as e:
-            print("[sentence]Failed!{}".format(e))
+            print("[sentence]{}".format(e))
             sys.exit(1)
 
     if path is not None:
@@ -255,7 +255,7 @@ if __name__ == "__main__":
             result = obj.ner_file(path)
             pprint(result)
         except Exception as e:
-            print("[file]Failed!{}".format(e))
+            print("[file]{}".format(e))
             sys.exit(1)
 
     sys.exit(0)
