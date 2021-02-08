@@ -3,6 +3,6 @@ jsonmerge
 json5==0.9.5
 pprintpp
 pybase64
-argparse
+argparse==1.4.0
 lxml
 bs4
